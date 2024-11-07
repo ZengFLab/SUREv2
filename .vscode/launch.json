@@ -1,0 +1,28 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Python: 当前文件",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--sup-data-file", "~/Project/Lee_data2/lee_dataset.mtx",
+                "--sup-label-file", "~/Project/Lee_data2/lee_dataset_label_one.txt",
+                "--sup-condition-file", "~/Project/Lee_data2/lee_dataset_disease_one.txt",
+                "--sup-condition2-file", "~/Project/Lee_data2/lee_dataset_sex_one.txt",
+                "-lr", "0.00007",
+                "-n", "30",
+                "-bs", "1000",
+                "--aux-loss",
+                "--validation-fold", "0",
+                "--save-model", "FM01_model.pth"
+            ]
+        }
+    ]
+}
