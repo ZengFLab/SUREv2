@@ -33,7 +33,7 @@ pip install .
 
 ## Tutorials
 
-### Tutorial 1: Building a codebook of metacells from a single omics data
+### [Tutorial 1: Building a codebook of metacells from a single omics data](./Tutorial/tutorial_1/metacell_call_for_single_omics_dataset.ipynb)
 ### Tutorial 2: Building a codebook of metacells from a multi-omics data
 ### Tutorial 3: Building a compressed cell atlas and reconstruct the data
 ### Tutorial 4: Identifying out-of-reference cells
