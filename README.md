@@ -39,6 +39,7 @@ pip install .
 ### Tutorial 2: Building a codebook of metacells from a multi-omics data
 ### Tutorial 3: Building a compressed cell atlas and reconstruct the data
 ### Tutorial 4: Identifying out-of-reference cells
+### Tutorial 5: Reference-based sketching
 
 
 ## Citations
