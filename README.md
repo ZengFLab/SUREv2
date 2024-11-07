@@ -13,7 +13,7 @@ SUREv2 is designed as a user-friendly package for cell atlas assembly and compre
 ## Installation
 1. Download SUREv2 and enter the director
 ```bash
-git clone & cd SUREv2
+git clone https://github.com/ZengFLab/SUREv2.git & cd SUREv2
 ```
 
 2. Install SUREv2
