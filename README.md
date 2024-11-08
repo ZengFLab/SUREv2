@@ -12,6 +12,12 @@ SUREv2 is designed as a user-friendly package for cell atlas assembly and compre
 - It includes Python classes **SURE** and **SUREMO** for building metacell models from single omics data and single multi-omics data.
 - It also offers the shell commands that users can call metacells within their data. 
 
+**Features**
+1. It finds metacells that precisely represent the distribution of cells within datasets.
+2. It supports both single- and multi-omics datasets.
+3. It provides distribution-based sampling methods.
+4. It allows to use a single GPU card like RTX3090 and TITAN RTX to construct an ultra-large-scale atlas, e.g. using over 10 million cells.
+
 ## Installation
 1. Download SUREv2 and enter the directory
 ```bash
@@ -36,7 +42,7 @@ pip install .
 ## Tutorials
 
 ### [Tutorial 1: Building a codebook of metacells from a single omics data](./Tutorial/tutorial_1/metacell_call_for_single_omics_dataset.ipynb)
-> This tutorial demonstrate the usage of SURE in Linux shell.
+> This tutorial demonstrate the usage of the SURE command.
 
 ### [Tutorial 2: Building a codebook of metacells from a multi-omics data](./Tutorial/tutorial_2/metacell_call_for_multi_omics_dataset.ipynb)
 ### [Tutorial 3: Distribution-preserved atlas compression](./Tutorial/tutorial_3/atlas_compression.ipynb)
