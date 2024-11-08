@@ -37,23 +37,28 @@ pip install .
 
 ### [Tutorial 1: Building a codebook of metacells from a single omics data](./Tutorial/tutorial_1/metacell_call_for_single_omics_dataset.ipynb)
 ### Tutorial 2: Building a codebook of metacells from a multi-omics data
-### Tutorial 3: Building a compressed cell atlas and reconstruct the data
-### Tutorial 4: Identifying out-of-reference cells
-### Tutorial 5: Reference-based sketching
+### Tutorial 3: Distribution-preserving atlas compression
+### Tutorial 4: Identifying out-of-reference cell populations
+### Tutorial 5: Simple reference-based sketching
+### Tutorial 6: Distribution-based boosted sketching
+### Tutorial 7: Hierarchical cell atlas assembly
+### Tutorial 8: Sketching-based cell atlas integration
+### Tutorial 9: Sketching-based cell atlas assembly
+### Tutorial 10: Building a reference atlas for cell type annotation
 
 
 ## Citations
 - If you use **SURE** to call metacells for single omics datasets, please kindly cite the work:
-    ```
-    Feng Zeng and Jiahuai Han. Building a single cell transcriptome-based coordinate system for cell ID with SURE. Submitted (2024).
-    ```
+    
+    >Feng Zeng and Jiahuai Han. Building a single cell transcriptome-based coordinate system for cell ID with SURE. Submitted (2024).
+    
 
 - If you use **SUREMO** to call metacells for multi-omics datasets, please cite the following work:
-    ```
-    Shuang-Rong Sun, Zhihan Cai, Feng Zeng. Self-organizing map of metacells and distribution-based boosted sketching for assembling atlas-level single-cell datasets. Submitted (2024)
-    ```
+    
+    >Shuang-Rong Sun, Zhihan Cai, Feng Zeng. Self-organizing map of metacells and distribution-based boosted sketching for assembling atlas-level single-cell datasets. Submitted (2024)
+    
 
 - If you use **SingleOmicsAtlas** to create compressed atlases and identify out-of-reference populations, please cite our work:
-    ```
-    Zhihan Cai, Zhibin Hu, Shuang-Rong Sun, Zexu Wang, Fan Yang, Jiahuai Han, Feng Zeng. Distribution-preserved compression of single-cell atlases for privacy-protected data dissemination and novel cell type discovery. Submitted (2024).
-    ```
+    
+    >Zhihan Cai, Zhibin Hu, Shuang-Rong Sun, Zexu Wang, Fan Yang, Jiahuai Han, Feng Zeng. Distribution-preserved compression of single-cell atlases for privacy-protected data dissemination and novel cell type discovery. Submitted (2024).
+    
