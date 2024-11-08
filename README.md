@@ -39,7 +39,7 @@ pip install .
 > This tutorial demonstrate the usage of SURE in Linux shell.
 
 ### Tutorial 2: Building a codebook of metacells from a multi-omics data
-### Tutorial 3: Distribution-preserved atlas compression
+### [Tutorial 3: Distribution-preserved atlas compression](./Tutorial/tutorial_3/atlas_compression.ipynb)
 > This tutorial gives an example of compressing an atlas into a codebook of 500 metacells.
 
 ### Tutorial 4: Identifying out-of-reference cell populations
