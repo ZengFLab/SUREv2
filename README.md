@@ -53,6 +53,7 @@ pip install .
 ### Tutorial 9: Sketching-based cell atlas assembly
 ### Tutorial 10: Building a reference atlas for cell type annotation
 ### Tutorial 11: Drug response prediction
+### Tutorial 12: Fitness landscape estimation
 
 
 ## Citations
