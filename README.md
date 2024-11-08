@@ -13,7 +13,7 @@ SUREv2 is designed as a user-friendly package for cell atlas assembly and compre
 - It also offers the shell commands that users can call metacells within their data. 
 
 ## Installation
-1. Download SUREv2 and enter the director
+1. Download SUREv2 and enter the directory
 ```bash
 git clone https://github.com/ZengFLab/SUREv2.git & cd SUREv2
 ```
