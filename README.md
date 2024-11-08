@@ -9,7 +9,7 @@ out-of-reference population detection, etc.
 
 SUREv2 is designed as a user-friendly package for cell atlas assembly and compression. 
 - It provides a Python class **SingleOmicsAtlas** for the construction and application of compressed cell atlases. 
-- It includes Python classes **SURE** and **SUREMO** for building metacell models for single omics data and single multi-omics data.
+- It includes Python classes **SURE** and **SUREMO** for building metacell models from single omics data and single multi-omics data.
 - It also offers the shell commands that users can call metacells within their data. 
 
 ## Installation
@@ -37,11 +37,13 @@ pip install .
 
 ### [Tutorial 1: Building a codebook of metacells from a single omics data](./Tutorial/tutorial_1/metacell_call_for_single_omics_dataset.ipynb)
 ### Tutorial 2: Building a codebook of metacells from a multi-omics data
-### Tutorial 3: Distribution-preserving atlas compression
+### Tutorial 3: Distribution-preserved atlas compression
 ### Tutorial 4: Identifying out-of-reference cell populations
 ### Tutorial 5: Simple reference-based sketching
 ### Tutorial 6: Distribution-based boosted sketching
-### Tutorial 7: Hierarchical cell atlas assembly
+### [Tutorial 7: Hierarchical cell atlas assembly](./Tutorial/tutorial_7/hierarchical_assembly.ipynb)
+This tutorial gives an example of building an assembled atlas using datasets from different species. 
+
 ### Tutorial 8: Sketching-based cell atlas integration
 ### Tutorial 9: Sketching-based cell atlas assembly
 ### Tutorial 10: Building a reference atlas for cell type annotation
