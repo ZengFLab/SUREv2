@@ -42,7 +42,7 @@ pip install .
 ### Tutorial 5: Simple reference-based sketching
 ### Tutorial 6: Distribution-based boosted sketching
 ### [Tutorial 7: Hierarchical cell atlas assembly](./Tutorial/tutorial_7/hierarchical_assembly.ipynb)
-This tutorial gives an example of building an assembled atlas using datasets from different species. 
+> This tutorial gives an example of building an assembled atlas using datasets from different species. 
 
 ### Tutorial 8: Sketching-based cell atlas integration
 ### Tutorial 9: Sketching-based cell atlas assembly
