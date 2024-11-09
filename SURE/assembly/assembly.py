@@ -307,7 +307,7 @@ def get_uns(adata, key):
         
     return data
     
-def split_by(adata, by, copy=False):
+def split_by(adata, by:str, copy:bool=False):
     adata_list = []
     for id in adata.obs[by].unique():
         if copy:
@@ -316,7 +316,7 @@ def split_by(adata, by, copy=False):
             adata_list.append(adata[adata.obs[by].isin([id])])
     return adata_list
 
-def split_batch_by(adata, by, batch_size=30000, copy=False):
+def split_batch_by_bk(adata, by, batch_size=30000, copy=False):
     df = adata.obs[by].value_counts().reset_index()
     df.columns = [by,'Value']
 
@@ -334,7 +334,18 @@ def split_batch_by(adata, by, batch_size=30000, copy=False):
 
     return adata_list
 
-def split_batch(adata, batch_size=30000, copy=False):
+def split_batch_by(adata, 
+                   by:str, 
+                   batch_size: int = 30000, 
+                   copy: bool = False):
+    groups = adata.obs[by].unique()
+    adata_list = []
+    for grp in groups:
+        adata_list.extend(split_batch(adata[adata.obs[by]==grp], batch_size=batch_size, copy=copy))
+
+    return adata_list
+
+def split_batch(adata, batch_size: int=30000, copy: bool=False):
     n = int(np.round(adata.shape[0] / batch_size))
     n = n if n > 0 else 1
     
