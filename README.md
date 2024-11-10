@@ -43,6 +43,7 @@ pip install .
 
 ### [Tutorial 1: Building a codebook of metacells from a single omics dataset](./Tutorial/tutorial_1/metacell_call_for_single_omics_dataset.ipynb)
 > This tutorial demonstrate the usage of the SURE command.
+![](./img/SURE.png)
 
 ### [Tutorial 2: Building a codebook of metacells from a multi-omics dataset](./Tutorial/tutorial_2/metacell_call_for_multi_omics_dataset.ipynb)
 ### [Tutorial 3: Distribution-preserved atlas compression](./Tutorial/tutorial_3/atlas_compression.ipynb)
