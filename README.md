@@ -41,10 +41,10 @@ pip install .
 
 ## Tutorials
 
-### [Tutorial 1: Building a codebook of metacells from a single omics data](./Tutorial/tutorial_1/metacell_call_for_single_omics_dataset.ipynb)
+### [Tutorial 1: Building a codebook of metacells from a single omics dataset](./Tutorial/tutorial_1/metacell_call_for_single_omics_dataset.ipynb)
 > This tutorial demonstrate the usage of the SURE command.
 
-### [Tutorial 2: Building a codebook of metacells from a multi-omics data](./Tutorial/tutorial_2/metacell_call_for_multi_omics_dataset.ipynb)
+### [Tutorial 2: Building a codebook of metacells from a multi-omics dataset](./Tutorial/tutorial_2/metacell_call_for_multi_omics_dataset.ipynb)
 ### [Tutorial 3: Distribution-preserved atlas compression](./Tutorial/tutorial_3/atlas_compression.ipynb)
 > This tutorial gives an example of compressing an atlas into a codebook of 500 metacells.
 ![](./img/compression.png)
@@ -61,7 +61,7 @@ pip install .
 ### Tutorial 10: Building a reference atlas for cell type annotation
 ### Tutorial 11: Drug response prediction
 ### Tutorial 12: Fitness landscape estimation
-
+### [Tutorial 13: Calling metacells for scATAC-seq datasets](./Tutorial/tutorial_13/metacell_call_for_single_ATACseq_dataset.ipynb)
 
 ## Citations
 - If you use **SURE** to call metacells for single omics datasets and assemble single-omics atlases, please kindly cite the work:
