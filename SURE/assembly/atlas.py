@@ -55,7 +55,7 @@ class SingleOmicsAtlas(nn.Module):
     """
     def __init__(self, 
                  atlas_name: str = 'Atlas', 
-                 hvgs: list | np.array | None = None, 
+                 hvgs: list = None, 
                  eps: float = 1e-12):
         super().__init__()
         self.atlas_name = atlas_name
@@ -81,10 +81,10 @@ class SingleOmicsAtlas(nn.Module):
         self.eps=eps
 
     def fit(self, adata_list, 
-            batch_key: str | None = None, 
-            pheno_keys: list | None = None, 
+            batch_key: str = None, 
+            pheno_keys: list = None, 
             preprocessing: bool = True, 
-            hvgs: list | np.array | None = None,
+            hvgs: list = None,
             n_top_genes: int = 5000, 
             hvg_method: Literal['seurat','seurat_v3','cell_ranger'] ='seurat', 
             layer: str = 'counts', 
@@ -353,7 +353,7 @@ class SingleOmicsAtlas(nn.Module):
                            n_sketches: int = 5000, 
                            n_neighbors: int = 10, 
                            aggregate_means: Literal['mean','sum','median'] = 'mean', 
-                           pheno_keys: list | None = None, 
+                           pheno_keys: list = None, 
                            pval: float = 1e-12):     
         """
         Reference-based boosted sketching. It returns an AnnData object of sketched cells.

@@ -106,8 +106,8 @@ class SURE(nn.Module):
                  zero_inflation: Literal['exact','inexact','none'] = 'exact',
                  gate_prior: float = 0.6,
                  delta: float = 0.0,
-                 post_layer_fct: list | None = ['layernorm'],
-                 post_act_fct: list | None =None,
+                 post_layer_fct: list = ['layernorm'],
+                 post_act_fct: list = None,
                  latent_dist: Literal['normal','studentt','laplacian'] = 'normal',
                  studentt_dof: float = 8,
                  config_enum: str = 'parallel',
@@ -1231,8 +1231,8 @@ class SURE(nn.Module):
         return tensor_to_numpy(log_prob_sum)
     
     def fit(self, xs, 
-            us: np.array | torch.tensor | None = None, 
-            ys: np.array | torch.tensor | None = None,
+            us = None, 
+            ys = None,
             num_epochs: int = 200, 
             learning_rate: float = 0.0001, 
             batch_size: int = 256, 
