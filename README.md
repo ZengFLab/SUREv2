@@ -1,8 +1,6 @@
 # SUREv2
 This provides an update of our previous tool [SURE (SUccinct REpresentation of cells)](https://github.com/ZengFLab/SURE).
 
-![Cell Atlas Assembly](./img/figure1.jpg)
-
 SURE and SUREMO are metacell-centric generative models. They use [self-organizing map (SOM)](https://en.wikipedia.org/wiki/Self-organizing_map) of metacells to represent cell distributions within 
 single-omics and multi-omics datasets. SUREv2 provides broad utilities, including metacell calling, cell atlas compression, cell atlas assembly, reference mapping, reference-based positioning,
 out-of-reference population detection, etc. 
