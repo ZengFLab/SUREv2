@@ -46,7 +46,7 @@ pip install .
 ### [Tutorial 2: Building a codebook of metacells from a multi-omics dataset](./Tutorial/tutorial_2/metacell_call_for_multi_omics_dataset.ipynb)
 ### [Tutorial 3: Distribution-preserved atlas compression](./Tutorial/tutorial_3/atlas_compression.ipynb)
 > This tutorial gives an example of compressing an atlas into a codebook of 500 metacells.
-![](./img/compression.png)
+![](./img/extended_fig7.svg)
 
 ### Tutorial 4: Identifying out-of-reference cell populations
 ### Tutorial 5: Simple reference-based sketching
