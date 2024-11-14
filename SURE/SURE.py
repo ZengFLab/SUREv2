@@ -112,7 +112,7 @@ class SURE(nn.Module):
                  studentt_dof: float = 8,
                  config_enum: str = 'parallel',
                  use_cuda: bool = False,
-                 dtype: torch.float32 = torch.float32,
+                 dtype: torch.float32 = torch.float32, # type: ignore
                  ):
         super().__init__()
 
