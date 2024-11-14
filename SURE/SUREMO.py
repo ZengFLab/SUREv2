@@ -1203,13 +1203,8 @@ class SUREMO(nn.Module):
     @classmethod
     def save_model(cls, model, file_path):
         """Save the model to the specified file path."""
-        #torch.save(model, file_path)
-
-        if Version(torch_version) < Version("2.0.0"):
-            torch.save(model, file_path)
-        else:
-            with open(file_path, 'wb') as pickle_file:
-                pickle.dump(model, pickle_file)
+        with open(file_path, 'wb') as pickle_file:
+            pickle.dump(model, pickle_file)
 
         print(f'Model saved to {file_path}')
 
@@ -1217,13 +1212,9 @@ class SUREMO(nn.Module):
     def load_model(cls, file_path):
         """Load the model from the specified file path and return an instance."""
         print(f'Model loaded from {file_path}')
-        #return torch.load(file_path)
 
-        if Version(torch_version) < Version("2.0.0"):
-            model = torch.load(file_path)
-        else:
-            with open(file_path, 'rb') as pickle_file:
-                model = pickle.load(pickle_file)
+        with open(file_path, 'rb') as pickle_file:
+            model = pickle.load(pickle_file)
         
         return model
 

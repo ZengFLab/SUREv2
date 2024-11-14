@@ -17,7 +17,7 @@ from ..utils import pretty_print
 from ..utils import find_partitions_greedy
 
 def assembly(adata_list_, batch_key, preprocessing=True, hvgs=None,
-             n_top_genes=5000, hvg_method='cell_ranger', layer='counts', cuda_id=0, use_jax=True,
+             n_top_genes=5000, hvg_method='cell_ranger', layer='counts', cuda_id=0, use_jax=False,
              codebook_size=500, codebook_size_per_adata=500, learning_rate=0.0001,
              batch_size=256, batch_size_per_adata=1000, n_epochs=200, latent_dist='normal',
              use_dirichlet=False, use_dirichlet_per_adata=True,

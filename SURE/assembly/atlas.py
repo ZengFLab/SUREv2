@@ -89,7 +89,7 @@ class SingleOmicsAtlas(nn.Module):
             hvg_method: Literal['seurat','seurat_v3','cell_ranger'] ='seurat', 
             layer: str = 'counts', 
             cuda_id: int = 0, 
-            use_jax: bool = True,
+            use_jax: bool = False,
             codebook_size: int = 500, 
             codebook_size_per_adata: int = 500, 
             learning_rate: float = 0.0001,
@@ -1281,13 +1281,9 @@ class SingleOmicsAtlas(nn.Module):
     def save_model(cls, atlas, file_path):
         """Save the model to the specified file path."""
         atlas.sample_adata = None
-        #torch.save(atlas, file_path)
 
-        if Version(torch_version) < Version("2.0.0"):
-            torch.save(atlas, file_path)
-        else:
-            with open(file_path, 'wb') as pickle_file:
-                pickle.dump(atlas, pickle_file)
+        with open(file_path, 'wb') as pickle_file:
+            pickle.dump(atlas, pickle_file)
 
         print(f'Model saved to {file_path}')
 
@@ -1295,13 +1291,8 @@ class SingleOmicsAtlas(nn.Module):
     def load_model(cls, file_path, n_samples=10000):
         """Load the model from the specified file path and return an instance."""
         print(f'Model loaded from {file_path}')
-        #atlas = torch.load(file_path)
-
-        if Version(torch_version) < Version("2.0.0"):
-            atlas = torch.load(file_path)
-        else:
-            with open(file_path, 'rb') as pickle_file:
-                atlas = pickle.load(pickle_file)
+        with open(file_path, 'rb') as pickle_file:
+            atlas = pickle.load(pickle_file)
         
         xs = atlas.sample(n_samples)
         atlas.sample_adata = sc.AnnData(xs)

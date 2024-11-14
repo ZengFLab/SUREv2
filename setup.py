@@ -12,7 +12,7 @@ setup(
     author='Feng Zeng',
     author_email='zengfeng@xmu.edu.cn',
     packages=find_packages(),
-    install_requires=['dill','pytorch-ignite','datatable'],
+    install_requires=['dill==0.3.8','pytorch-ignite','datatable'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
