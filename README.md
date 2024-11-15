@@ -27,7 +27,7 @@ git clone https://github.com/ZengFLab/SUREv2.git && cd SUREv2
 conda env create -f environment.yml
 ```
 
-3. Activate the create environment. Suppose the envrionment's name is pyro.
+3. Activate the created environment. Suppose the envrionment's name is pyro.
 ```bash
 conda activate pyro
 ```
