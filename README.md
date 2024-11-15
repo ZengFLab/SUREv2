@@ -22,12 +22,22 @@ SUREv2 is designed as a user-friendly package for cell atlas assembly and compre
 git clone https://github.com/ZengFLab/SUREv2.git && cd SUREv2
 ```
 
-2. Install SUREv2
+2. Create a virtual environment
+```bash
+conda env create -f environment.yml
+```
+
+3. Activate the create environment. Suppose the envrionment's name is pyro.
+```bash
+conda activate pyro
+```
+
+4. Install SUREv2
 ```bash
 pip install .
 ```
 
-3. Test whether SUREv2 has been installed
+5. Test whether SUREv2 has been installed
 - Test the metacell command for single omics data
     ```bash
     SURE --help
