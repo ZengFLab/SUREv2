@@ -1203,6 +1203,9 @@ class SUREMO(nn.Module):
     @classmethod
     def save_model(cls, model, file_path):
         """Save the model to the specified file path."""
+        file_path = os.path.abspath(file_path)
+
+        model.eval()
         with open(file_path, 'wb') as pickle_file:
             pickle.dump(model, pickle_file)
 
@@ -1213,6 +1216,7 @@ class SUREMO(nn.Module):
         """Load the model from the specified file path and return an instance."""
         print(f'Model loaded from {file_path}')
 
+        file_path = os.path.abspath(file_path)
         with open(file_path, 'rb') as pickle_file:
             model = pickle.load(pickle_file)
         

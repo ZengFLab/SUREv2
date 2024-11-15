@@ -1280,7 +1280,10 @@ class SingleOmicsAtlas(nn.Module):
     @classmethod
     def save_model(cls, atlas, file_path):
         """Save the model to the specified file path."""
+        file_path = os.path.abspath(file_path)
+
         atlas.sample_adata = None
+        atlas.eval()
 
         with open(file_path, 'wb') as pickle_file:
             pickle.dump(atlas, pickle_file)
@@ -1291,6 +1294,8 @@ class SingleOmicsAtlas(nn.Module):
     def load_model(cls, file_path, n_samples=10000):
         """Load the model from the specified file path and return an instance."""
         print(f'Model loaded from {file_path}')
+
+        file_path = os.path.abspath(file_path)
         with open(file_path, 'rb') as pickle_file:
             atlas = pickle.load(pickle_file)
         
