@@ -74,7 +74,7 @@ pip install .
 ## Citations
 - If you use **SURE** to call metacells for single omics datasets and assemble single-omics atlases, please kindly cite the work:
     
-    >Feng Zeng and Jiahuai Han. Building a single cell transcriptome-based coordinate system for cell ID with SURE. Submitted (2024).
+    >Feng Zeng and Jiahuai Han. Building a single cell transcriptome-based coordinate system for cell ID with SURE. bioRxiv (2024). [https://www.biorxiv.org/content/10.1101/2024.11.13.623403v1](https://www.biorxiv.org/content/10.1101/2024.11.13.623403v1)
     
 
 - If you use **SUREMO** to call metacells for multi-omics datasets and assemble multi-omics atlases, please cite the following work:
