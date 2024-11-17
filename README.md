@@ -14,7 +14,7 @@ SUREv2 is designed as a user-friendly package for cell atlas assembly and compre
 1. It finds metacells that precisely represent the distribution of cells within datasets.
 2. It supports both single- and multi-omics datasets.
 3. It provides distribution-based sampling methods.
-4. It allows to use a single GPU card like RTX3090 and TITAN RTX to construct an ultra-large-scale atlas, e.g. using over 10 million cells.
+4. It allows to construct an ultra-large-scale atlas, e.g. using over 10 million cells, with a single GPU card like RTX3090 and TITAN RTX.
 
 ## Installation
 1. Download SUREv2 and enter the directory
