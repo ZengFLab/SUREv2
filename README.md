@@ -79,7 +79,7 @@ pip install .
 
 - If you use **SUREMO** to call metacells for multi-omics datasets and assemble multi-omics atlases, please cite the following work:
     
-    >Shuang-Rong Sun, Zhihan Cai, Feng Zeng. Self-organizing map of metacells and distribution-based boosted sketching for assembling atlas-level single-cell datasets. Submitted (2024)
+    >Shuang-Rong Sun, Zhihan Cai, Feng Zeng. Self-organizing map of metacells and distribution-based boosted sketching for assembling atlas-level single-cell datasets. bioRxiv (2024). [https://www.biorxiv.org/content/10.1101/2024.11.16.622584v1](https://www.biorxiv.org/content/10.1101/2024.11.16.622584v1)
     
 
 - If you use **SingleOmicsAtlas** to create compressed atlases and identify out-of-reference populations, please cite our work:
