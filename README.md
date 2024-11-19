@@ -2,7 +2,7 @@
 This provides an update of our previous tool [SURE (SUccinct REpresentation of cells)](https://github.com/ZengFLab/SURE).
 
 SURE and SUREMO are metacell-centric generative models. They use vector quantization (VQ) codebook of metacells to represent cell distributions within 
-single-omics and multi-omics datasets. SUREv2 provides broad utilities, including metacell calling, cell atlas compression, cell atlas assembly, reference mapping, reference-based positioning,
+**single-omics** and **multi-omics** datasets. SUREv2 provides broad utilities, including metacell calling, cell atlas compression, cell atlas assembly, reference mapping, reference-based positioning,
 out-of-reference population detection, etc. 
 
 SUREv2 is designed as a user-friendly package for cell atlas assembly and compression. 
