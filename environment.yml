@@ -1,4 +1,4 @@
-name: pyro
+name: SURE
 channels:
   - pytorch
   - nvidia
