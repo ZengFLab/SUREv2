@@ -345,7 +345,7 @@ class SingleOmicsAtlas(nn.Module):
         nbrs.fit(zs)
 
         sketch_cells = []
-        ids = nbrs.kneighbors(zs_sample)
+        _,ids = nbrs.kneighbors(zs_sample)
         sketch_cells = ids.flatten()
 
         return sketch_cells, np.argmax(xs_assign, axis=1)
