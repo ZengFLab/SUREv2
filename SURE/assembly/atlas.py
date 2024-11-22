@@ -12,6 +12,7 @@ import datatable as dt
 from tqdm import tqdm
 import umap 
 from sklearn.neighbors import NearestNeighbors
+import faiss 
 
 import torch
 import torch.nn as nn
@@ -322,6 +323,34 @@ class SingleOmicsAtlas(nn.Module):
         return xs, tensor_to_numpy(ns)
 
     def sketch_cells(self, adata, 
+                     n_sketches: int = 5000):
+        """
+        Simple reference-based sketching. 
+        It returns the identity of sketched cells.
+
+        Parameters
+        ----------
+        adata
+            Input adata for sketching. It should be an AnnData object.
+        n_sketches
+            Number of sketched cells.
+        """
+        xs_sample, xs_assign = self.sample_with_origin(n_sketches)
+        zs_sample = self.model.get_cell_coordinates(xs_sample)
+
+        xs = get_subdata(adata, self.hvgs, layer=self.layer)
+        zs = self.model.get_cell_coordinates(xs.values)
+
+        nbrs = FaissKNeighbors(n_neighbors=1)
+        nbrs.fit(zs)
+
+        sketch_cells = []
+        ids = nbrs.kneighbors(zs_sample)
+        sketch_cells = ids.flatten()
+
+        return sketch_cells, np.argmax(xs_assign, axis=1)
+    
+    def sketch_cells_bk(self, adata, 
                      n_sketches: int = 5000):
         """
         Simple reference-based sketching. 
@@ -1446,3 +1475,17 @@ def cdf(density, xs, initial=0):
     CDF /= CDF[-1]
     return CDF
 
+
+
+class FaissKNeighbors:
+    def __init__(self, n_neighbors=5):
+        self.index = None
+        self.k = n_neighbors
+
+    def fit(self, X):
+        self.index = faiss.IndexFlatL2(X.shape[1])
+        self.index.add(X.astype(np.float32))
+
+    def kneighbors(self, X):
+        distances, indices = self.index.search(X.astype(np.float32), k=self.k)
+        return distances, indices
