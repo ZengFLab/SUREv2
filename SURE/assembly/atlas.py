@@ -33,6 +33,7 @@ import matplotlib.patches as mpatches
 from matplotlib.colors import ListedColormap
 
 import dill as pickle
+import gzip 
 from packaging.version import Version
 torch_version = torch.__version__
 
@@ -1307,15 +1308,19 @@ class SingleOmicsAtlas(nn.Module):
                                              learning_rate, use_jax)
 
     @classmethod
-    def save_model(cls, atlas, file_path):
+    def save_model(cls, atlas, file_path, compression=False):
         """Save the model to the specified file path."""
         file_path = os.path.abspath(file_path)
 
         atlas.sample_adata = None
         atlas.eval()
 
-        with open(file_path, 'wb') as pickle_file:
-            pickle.dump(atlas, pickle_file)
+        if compression:
+            with gzip.open(file_path, 'wb') as pickle_file:
+                pickle.dump(atlas, pickle_file)
+        else:
+            with open(file_path, 'wb') as pickle_file:
+                pickle.dump(atlas, pickle_file)
 
         print(f'Model saved to {file_path}')
 
@@ -1325,8 +1330,12 @@ class SingleOmicsAtlas(nn.Module):
         print(f'Model loaded from {file_path}')
 
         file_path = os.path.abspath(file_path)
-        with open(file_path, 'rb') as pickle_file:
-            atlas = pickle.load(pickle_file)
+        if file_path.endswith('gz'):
+            with gzip.open(file_path, 'rb') as pickle_file:
+                atlas = pickle.load(pickle_file)
+        else:
+            with open(file_path, 'rb') as pickle_file:
+                atlas = pickle.load(pickle_file)
         
         xs = atlas.sample(n_samples)
         atlas.sample_adata = sc.AnnData(xs)

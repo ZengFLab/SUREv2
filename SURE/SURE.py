@@ -27,6 +27,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import dill as pickle
+import gzip
 from packaging.version import Version
 torch_version = torch.__version__
 
@@ -1359,13 +1360,17 @@ class SURE(nn.Module):
         #self.dof = pyro.param('dof').item()
 
     @classmethod
-    def save_model(cls, model, file_path):
+    def save_model(cls, model, file_path, compression=False):
         """Save the model to the specified file path."""
         file_path = os.path.abspath(file_path)
 
         model.eval()
-        with open(file_path, 'wb') as pickle_file:
-            pickle.dump(model, pickle_file)
+        if compression:
+            with gzip.open(file_path, 'wb') as pickle_file:
+                pickle.dump(model, pickle_file)
+        else:
+            with open(file_path, 'wb') as pickle_file:
+                pickle.dump(model, pickle_file)
 
         print(f'Model saved to {file_path}')
 
@@ -1375,8 +1380,12 @@ class SURE(nn.Module):
         print(f'Model loaded from {file_path}')
 
         file_path = os.path.abspath(file_path)
-        with open(file_path, 'rb') as pickle_file:
-            model = pickle.load(pickle_file)
+        if file_path.endswith('gz'):
+            with gzip.open(file_path, 'rb') as pickle_file:
+                model = pickle.load(pickle_file)
+        else:
+            with open(file_path, 'rb') as pickle_file:
+                model = pickle.load(pickle_file)
         
         return model
 
