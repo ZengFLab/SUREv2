@@ -1,3 +1,6 @@
+# Making atlas assembly easy, joyful, and useful!
+![](./img/assembly.svg)
+
 # SUREv2
 This provides an update of our previous tool [SURE (SUccinct REpresentation of cells)](https://github.com/ZengFLab/SURE).
 
