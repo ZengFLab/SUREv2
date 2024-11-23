@@ -1,4 +1,4 @@
-# Making atlas assembly easy, joyful, and useful!
+# Making cell atlas assembly easy, joyful, and useful!
 ![](./img/assembly.svg)
 
 # SUREv2
