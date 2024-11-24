@@ -56,7 +56,17 @@ def assembly(adata_list_, batch_key, preprocessing=True, hvgs=None,
         print(f'{len(hvgs)} common HVGs are found')
 
     for i in np.arange(n_adatas):
-        adata_list[i] = adata_list[i][:,hvgs]    
+        mask = [x in adata_list[i].var_names.tolist() for x in hvgs]
+        if all(mask):
+            adata_list[i] = adata_list[i][:,hvgs]    
+        else:
+            adata_i_X = get_subdata(adata_list[i], hvgs, 'X')
+            adata_i_counts = get_subdata(adata_list[i], hvgs, 'counts')
+            adata_i_obs = adata_list[i].obs
+            adata_i_new = sc.AnnData(adata_i_X, obs=adata_i_obs)
+            adata_i_new.var_names = hvgs
+            adata_i_new.layers['counts'] = adata_i_counts
+            adata_list[i] = adata_i_new
 
     models_list = []
     model = None
