@@ -33,6 +33,9 @@ import gzip
 from packaging.version import Version
 torch_version = torch.__version__
 
+from typing import Literal
+
+
 def set_random_seed(seed):
     # Set seed for PyTorch
     torch.manual_seed(seed)
@@ -65,30 +68,29 @@ class SUREMO(nn.Module):
     """
 
     def __init__(self,
-                 input_size1 = 2000,
-                 input_size2 = 500,
-                 undesired_size=2,
-                 codebook_size=200,
-                 z_dim=50,
-                 hidden_layers=[500],
-                 hidden_layer_activation='relu',
-                 use_dirichlet=True,
-                 dirichlet_mass=1,
-                 loss_func1 = 'negbinomial',
-                 loss_func2 = 'negbinomial',
-                 inverse_dispersion=10.0,
-                 nn_dropout = 0.1,
-                 zero_inflation1 = None,
-                 zero_inflation2 = None,
-                 gate_prior=0.6,
-                 delta=0.0,
-                 post_layer_fct=['layernorm'],
-                 post_act_fct=None,
-                 effect_size_estimator='linear',
-                 latent_dist='studentt',
-                 studentt_dof=8,
-                 config_enum='parallel',
-                 use_cuda=False,
+                 input_size1: int = 2000,
+                 input_size2: int = 500,
+                 undesired_size: int = 2,
+                 codebook_size: int = 200,
+                 z_dim: int = 50,
+                 hidden_layers: list = [500],
+                 hidden_layer_activation: Literal['relu','softplus','leakyrelu','linear'] = 'relu',
+                 use_dirichlet: bool = True,
+                 dirichlet_mass: float = 1,
+                 loss_func1: Literal['negbinomial','poisson','multinomial','gaussian'] = 'negbinomial',
+                 loss_func2: Literal['negbinomial','poisson','multinomial','gaussian'] = 'negbinomial',
+                 inverse_dispersion: float = 10.0,
+                 nn_dropout: float = 0.1,
+                 zero_inflation1: Literal['exact','inexact','none'] = 'exact',
+                 zero_inflation2: Literal['exact','inexact','none'] = 'exact',
+                 gate_prior: float = 0.6,
+                 delta: float = 0.0,
+                 post_layer_fct: list = ['layernorm'],
+                 post_act_fct: list = None,
+                 latent_dist: Literal['normal','laplacian','cauchy','studentt'] = 'normal',
+                 studentt_dof: float = 8,
+                 config_enum: str = 'parallel',
+                 use_cuda: bool = False,
                  dtype=torch.float32,
                  ):
         super().__init__()
@@ -108,12 +110,12 @@ class SUREMO(nn.Module):
         self.loss_func1 = loss_func1
         self.loss_func2 = loss_func2
         
-        self.effect_size_estimator = effect_size_estimator
         self.options = None
         self.code_size=codebook_size
 
         self.use_studentt = False
         self.use_laplacian=False
+        self.latent_dist = latent_dist
         if latent_dist.lower() in ['laplacian']:
             self.use_laplacian=True
         elif latent_dist.lower() in ['studentt','student-t','t']:
@@ -456,11 +458,13 @@ class SUREMO(nn.Module):
             prior_loc = torch.matmul(ns, acs_loc)
             prior_scale = torch.matmul(ns, acs_scale)
 
-            if self.use_studentt:
+            if self.latent_dist == 'studentt':
                 zns = pyro.sample('zn', dist.StudentT(df=dof, loc=prior_loc, scale=prior_scale).to_event(1))
-            elif self.use_laplacian:
+            elif self.latent_dist == 'laplacian':
                 zns = pyro.sample('zn', dist.Laplace(prior_loc, prior_scale).to_event(1))
-            else:
+            elif self.latent_dist == 'cauchy':
+                zns = pyro.sample('zn', dist.Cauchy(prior_loc, prior_scale).to_event(1))
+            elif self.latent_dist == 'normal':
                 zns = pyro.sample('zn', dist.Normal(prior_loc, prior_scale).to_event(1))
 
             ###############################################
@@ -637,11 +641,13 @@ class SUREMO(nn.Module):
             prior_loc = torch.matmul(ns, acs_loc)
             prior_scale = torch.matmul(ns, acs_scale)
 
-            if self.use_studentt:
+            if self.latent_dist == 'studentt':
                 zns = pyro.sample('zn', dist.StudentT(df=dof, loc=prior_loc, scale=prior_scale).to_event(1))
-            elif self.use_laplacian:
+            elif self.latent_dist == 'laplacian':
                 zns = pyro.sample('zn', dist.Laplace(prior_loc, prior_scale).to_event(1))
-            else:
+            elif self.latent_dist == 'cauchy':
+                zns = pyro.sample('zn', dist.Cauchy(prior_loc, prior_scale).to_event(1))
+            elif self.latent_dist == 'normal':
                 zns = pyro.sample('zn', dist.Normal(prior_loc, prior_scale).to_event(1))
 
             ###############################################
@@ -1289,16 +1295,11 @@ def parse_args():
         help="use double float precision",
     )
     parser.add_argument(
-        "-la",
-        "--laplace",
-        action="store_true",
-        help="use laplace distribution for latent representation",
-    )
-    parser.add_argument(
-        "-st",
-        "--student-t",
-        action="store_true",
-        help="use Student-t distribution for latent representation",
+        "--z-dist",
+        default='normal',
+        type=str,
+        choices=['normal','laplacian','studentt','cauchy'],
+        help="distribution model for latent representation",
     )
     parser.add_argument(
         "-dof",
@@ -1434,7 +1435,7 @@ def parse_args():
     parser.add_argument(
         "-zi1",
         "--zero-inflation1",
-        default='none',
+        default='exact',
         type=str,
         choices=['none','exact','inexact'],
         help="use zero-inflated estimation",
@@ -1442,7 +1443,7 @@ def parse_args():
     parser.add_argument(
         "-zi2",
         "--zero-inflation2",
-        default='none',
+        default='exact',
         type=str,
         choices=['none','exact','inexact'],
         help="use zero-inflated estimation",
@@ -1493,11 +1494,7 @@ def main():
     input_size1 = xs1.shape[1]
     input_size2 = xs2.shape[1]
 
-    latent_dist = 'normal'
-    if args.laplace:
-        latent_dist='laplacian'
-    if args.student_t:
-        latent_dist='studentt'
+    latent_dist = args.z_dist
 
     #######################################
     suremo = SUREMO(
@@ -1521,7 +1518,6 @@ def main():
         nn_dropout=args.layer_dropout_rate,
         post_layer_fct=args.post_layer_function,
         post_act_fct=args.post_activation_function,
-        effect_size_estimator=args.effect_size_estimator,
         codebook_size=args.codebook_size,
         latent_dist = latent_dist,
         studentt_dof = args.degree_of_freedom,

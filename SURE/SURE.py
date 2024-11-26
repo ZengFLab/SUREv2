@@ -109,11 +109,11 @@ class SURE(nn.Module):
                  delta: float = 0.0,
                  post_layer_fct: list = ['layernorm'],
                  post_act_fct: list = None,
-                 latent_dist: Literal['normal','studentt','laplacian'] = 'normal',
+                 latent_dist: Literal['normal','studentt','laplacian','cauchy'] = 'normal',
                  studentt_dof: float = 8,
                  config_enum: str = 'parallel',
                  use_cuda: bool = False,
-                 dtype: torch.float32 = torch.float32, # type: ignore
+                 dtype = torch.float32, # type: ignore
                  ):
         super().__init__()
 
@@ -134,6 +134,7 @@ class SURE(nn.Module):
 
         self.use_studentt = False
         self.use_laplacian=False
+        self.latent_dist = latent_dist
         if latent_dist.lower() in ['laplacian']:
             self.use_laplacian=True
         elif latent_dist.lower() in ['studentt','student-t','t']:
@@ -395,11 +396,13 @@ class SURE(nn.Module):
             prior_loc = torch.matmul(ns,acs_loc)
             prior_scale = torch.matmul(ns,acs_scale)
 
-            if self.use_studentt:
+            if self.latent_dist == 'studentt':
                 zns = pyro.sample('zn', dist.StudentT(df=dof, loc=prior_loc, scale=prior_scale).to_event(1))
-            elif self.use_laplacian:
+            elif self.latent_dist == 'laplacian':
                 zns = pyro.sample('zn', dist.Laplace(prior_loc, prior_scale).to_event(1))
-            else:
+            elif self.latent_dist == 'cauchy':
+                zns = pyro.sample('zn', dist.Cauchy(prior_loc, prior_scale).to_event(1))
+            elif self.latent_dist == 'normal':
                 zns = pyro.sample('zn', dist.Normal(prior_loc, prior_scale).to_event(1))
 
             zs = zns
@@ -1441,16 +1444,11 @@ def parse_args():
         help="use double float precision",
     )
     parser.add_argument(
-        "-la",
-        "--laplace",
-        action="store_true",
-        help="use laplace distribution for latent representation",
-    )
-    parser.add_argument(
-        "-st",
-        "--student-t",
-        action="store_true",
-        help="use Student-t distribution for latent representation",
+        "--z-dist",
+        default='normal',
+        type=str,
+        choices=['normal','laplacian','studentt','cauchy'],
+        help="distribution model for latent representation",
     )
     parser.add_argument(
         "-dof",
@@ -1578,7 +1576,7 @@ def parse_args():
     parser.add_argument(
         "-zi",
         "--zero-inflation",
-        default='none',
+        default='exact',
         type=str,
         choices=['none','exact','inexact'],
         help="use zero-inflated estimation",
@@ -1623,11 +1621,7 @@ def main():
     input_size = xs.shape[1]
     undesired_size = 0 if us is None else us.shape[1]
 
-    latent_dist = 'normal'
-    if args.laplace:
-        latent_dist='laplacian'
-    if args.student_t:
-        latent_dist='studentt'
+    latent_dist = args.z_dist
 
     ###########################################
     sure = SURE(
