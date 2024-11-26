@@ -162,7 +162,8 @@ def assembly(adata_list_, batch_key, preprocessing=True, hvgs=None,
                             -n {n_epochs} \
                             -bs {batch_size} \
                             -cs {codebook_size} \
-                            -likeli {likelihood} {latent_dist_param} {dirichlet} {zi} \
+                            --z-dist {latent_dist} \
+                            -likeli {likelihood} {dirichlet} {zi} \
                             --save-model "{temp_model_file}" '
             pretty_print(cmd)
             subprocess.call(f'{cmd}', shell=True)
