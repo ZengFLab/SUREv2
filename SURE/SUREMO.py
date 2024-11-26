@@ -1276,14 +1276,6 @@ def parse_args():
         help="the file for the record of undesired factors",
     )
     parser.add_argument(
-        "-ese",
-        "--effect-size-estimator",
-        default='linear',
-        type=str,
-        choices=['linear', 'nonlinear'],
-        help="specify method for effect size estimation",
-    )
-    parser.add_argument(
         "-delta",
         "--delta",
         default=0.0,
@@ -1295,12 +1287,6 @@ def parse_args():
         "--float64",
         action="store_true",
         help="use double float precision",
-    )
-    parser.add_argument(
-        "-lt",
-        "--log-transform",
-        action="store_true",
-        help="run log-transform on count data",
     )
     parser.add_argument(
         "-la",
@@ -1333,8 +1319,7 @@ def parse_args():
         "--z-dim",
         default=10,
         type=int,
-        help="size of the tensor representing the latent variable z "
-        "variable (handwriting style for our MNIST dataset)",
+        help="size of the tensor representing the latent variable z variable",
     )
     parser.add_argument(
         "-hl",
@@ -1408,13 +1393,7 @@ def parse_args():
         "--batch-size",
         default=1000,
         type=int,
-        help="number of images (and labels) to be considered in a batch",
-    )
-    parser.add_argument(
-        "-expm1",
-        "--expm1",
-        action="store_true",
-        help="turn on exponential transformation",
+        help="number of cells to be considered in a batch",
     )
     parser.add_argument(
         "-gp",

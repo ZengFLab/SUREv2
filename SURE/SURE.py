@@ -1471,8 +1471,7 @@ def parse_args():
         "--z-dim",
         default=10,
         type=int,
-        help="size of the tensor representing the latent variable z "
-        "variable (handwriting style for our MNIST dataset)",
+        help="size of the tensor representing the latent variable z variable",
     )
     parser.add_argument(
         "-hl",
@@ -1546,7 +1545,7 @@ def parse_args():
         "--batch-size",
         default=1000,
         type=int,
-        help="number of images (and labels) to be considered in a batch",
+        help="number of cells to be considered in a batch",
     )
     parser.add_argument(
         "-gp",
