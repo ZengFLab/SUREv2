@@ -1519,7 +1519,7 @@ class LogisticClassifier():
         self.label_encoder.fit(y)
         y = self.label_encoder.transform(y)
 
-        counts = get_subdata(adata, self.atlas.hvgs)
+        counts = get_subdata(adata, self.atlas.hvgs).values
         X = self.atlas.model.get_cell_coordinates(counts)
         #_,X,_ = self.atlas.map(adata)
 
@@ -1533,7 +1533,7 @@ class LogisticClassifier():
         return self.label_encoder.inverse_transform(preds)
     
     def predict_log_proba(self, adata):
-        counts = get_subdata(adata, self.atlas.hvgs)
+        counts = get_subdata(adata, self.atlas.hvgs).values
         X = self.atlas.model.get_cell_coordinates(counts)
         #_,X,_ = self.atlas.map(adata)
         scores = self.classifier.predict_log_proba(X)
