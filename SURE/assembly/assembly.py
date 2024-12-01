@@ -296,7 +296,7 @@ def get_subdata(adata, hvgs, layer='counts'):
     hvgs_df = pd.DataFrame({'hvgs':hvgs})
     mask = hvgs_df['hvgs'].isin(adata.var_names.tolist())
     if all(mask):
-        X = get_data(adata, layer)
+        X = get_data(adata[:,hvgs], layer)
         return X[hvgs]
     else:
         #X2 = np.zeros((X.shape[0], len(hvgs)))
