@@ -6,13 +6,21 @@ import numpy as np
 import scipy as sp
 from scipy import sparse
 from scipy.stats import gaussian_kde
-from scipy.integrate import cumtrapz
+
+if sp.__version__ < '1.14.0':
+    from scipy.integrate import cumtrapz
+else:
+    from scipy.integrate import cumulative_trapezoid as cumtrapz
+
 import pandas as pd
 import datatable as dt
 from tqdm import tqdm
 import umap 
-from sklearn.neighbors import NearestNeighbors
 import faiss 
+from sklearn.neighbors import NearestNeighbors
+from cuml.linear_model import LogisticRegression
+from sklearn.preprocessing import LabelEncoder
+
 
 import torch
 import torch.nn as nn
@@ -1498,3 +1506,35 @@ class FaissKNeighbors:
     def kneighbors(self, X):
         distances, indices = self.index.search(X.astype(np.float32), k=self.k)
         return distances, indices
+    
+
+class LogisticClassifier():
+    def __init__(self, atlas):
+        self.classifier = LogisticRegression()
+        self.label_encoder = LabelEncoder() 
+        self.atlas = atlas
+
+    def fit(self, adata, label_key):
+        y = adata.obs[label_key].astype(str).to_list()
+        self.label_encoder.fit(y)
+        y = self.label_encoder.transform(y)
+
+        counts = get_subdata(adata)
+        X = self.atlas.model.get_cell_coordinates(counts)
+        #_,X,_ = self.atlas.map(adata)
+
+        self.classifier.fit(X,y)
+
+    def predict(self, adata):
+        #_,X,_ = self.atlas.map(adata)
+        #preds = self.classifier.predict(X)
+        scores = self.predict_log_proba(adata)
+        preds = np.argmax(scores, axis=1)
+        return self.label_encoder.inverse_transform(preds)
+    
+    def predict_log_proba(self, adata):
+        counts = get_subdata(adata)
+        X = self.atlas.model.get_cell_coordinates(counts)
+        #_,X,_ = self.atlas.map(adata)
+        scores = self.classifier.predict_log_proba(X)
+        return scores

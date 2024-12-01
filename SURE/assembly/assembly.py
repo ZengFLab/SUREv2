@@ -2,6 +2,7 @@ import scanpy as sc
 import pandas as pd
 import numpy as np
 import scipy as sp
+from scipy.sparse import csr_matrix
 from sklearn.preprocessing import OneHotEncoder
 
 import os 
@@ -16,19 +17,13 @@ from ..utils import convert_to_tensor, tensor_to_numpy
 from ..utils import pretty_print
 from ..utils import find_partitions_greedy
 
-from typing import Literal
-
 def assembly(adata_list_, batch_key, preprocessing=True, hvgs=None,
-             n_top_genes=5000, 
-             hvg_method: Literal['seurat','seurat_v3','cell_ranger'] = 'cell_ranger', 
-             layer='counts', cuda_id=0, use_jax=False,
+             n_top_genes=5000, hvg_method='cell_ranger', layer='counts', cuda_id=0, use_jax=False,
              codebook_size=500, codebook_size_per_adata=500, learning_rate=0.0001,
-             batch_size=256, batch_size_per_adata=1000, n_epochs=200, 
-             latent_dist: Literal['normal','laplacian','cauchy','studentt'] = 'normal',
+             batch_size=256, batch_size_per_adata=1000, n_epochs=200, latent_dist='normal',
              use_dirichlet=False, use_dirichlet_per_adata=True,
              zero_inflation=False, zero_inflation_per_adata=True,
-             likelihood: Literal['negbinomial','multinomial']='negbinomial', 
-             likelihood_per_adata: Literal['negbinomial','multinomial']='negbinomial', 
+             likelihood='negbinomial', likelihood_per_adata='negbinomial', 
              n_samples_per_adata=10000, total_samples=300000,
              sketching=False, boost_sketch=False, n_sketch_neighbors=10):
     adata_list = [ad.copy() for ad in adata_list_]
@@ -78,6 +73,13 @@ def assembly(adata_list_, batch_key, preprocessing=True, hvgs=None,
     model = None
     # process
     with tempfile.TemporaryDirectory() as temp_dir:
+        if latent_dist == 'lapacian':
+            latent_dist_param='-la'
+        elif latent_dist == 'studentt':
+            latent_dist_param='-st'
+        else:
+            latent_dist_param=''
+
         dirichlet = '-dirichlet' if use_dirichlet else ''
         dirichlet_per_adata = '-dirichlet' if use_dirichlet_per_adata else ''
 
@@ -109,8 +111,7 @@ def assembly(adata_list_, batch_key, preprocessing=True, hvgs=None,
                         -n {n_epochs} \
                         -bs {batch_size_per_adata} \
                         -cs {codebook_size_per_adata} \
-                        --z-dist {latent_dist} \
-                        -likeli {likelihood_per_adata} {dirichlet_per_adata} {zi_per_adata} \
+                        -likeli {likelihood_per_adata} {latent_dist_param} {dirichlet_per_adata} {zi_per_adata} \
                         --save-model "{temp_model_file}" '
             pretty_print(cmd)
             subprocess.call(f'{cmd}', shell=True)
@@ -162,8 +163,7 @@ def assembly(adata_list_, batch_key, preprocessing=True, hvgs=None,
                             -n {n_epochs} \
                             -bs {batch_size} \
                             -cs {codebook_size} \
-                            --z-dist {latent_dist} \
-                            -likeli {likelihood} {dirichlet} {zi} \
+                            -likeli {likelihood} {latent_dist_param} {dirichlet} {zi} \
                             --save-model "{temp_model_file}" '
             pretty_print(cmd)
             subprocess.call(f'{cmd}', shell=True)
@@ -292,18 +292,31 @@ def get_data(adata, layer='counts'):
     return pd.DataFrame(data.astype('float32'), columns=adata.var_names) 
 
 def get_subdata(adata, hvgs, layer='counts'):
-    X = get_data(adata, layer)
-
-    mask = [hvg in X for hvg in hvgs]
+    #mask = [hvg in X for hvg in hvgs]
+    hvgs_df = pd.DataFrame({'hvgs':hvgs})
+    mask = hvgs_df['hvgs'].isin(adata.var_names.tolist())
     if all(mask):
+        X = get_data(adata, layer)
         return X[hvgs]
     else:
-        X2 = np.zeros((X.shape[0], len(hvgs)))
-        X2 = pd.DataFrame(X2, columns=hvgs)
+        #X2 = np.zeros((X.shape[0], len(hvgs)))
+        #X2 = pd.DataFrame(X2, columns=hvgs)
 
-        columns = [c for c in X.columns.tolist() if c in hvgs]
-        X2[columns] = X[columns].copy()
-        return X2
+        #columns = [c for c in X.columns.tolist() if c in hvgs]
+        #X2[columns] = X[columns].copy()
+
+        # inspired by SCimilarity
+        shell = sc.AnnData(
+            X=csr_matrix((0, len(hvgs))),
+            var=pd.DataFrame(index=hvgs),
+        )
+        if layer.lower() != 'x':
+            shell.layers[layer] = shell.X.copy()
+        shell = sc.concat(
+            (shell, adata[:, adata.var.index.isin(shell.var.index)]), join="outer"
+        )
+        X2 = get_data(shell, layer)
+        return X2[hvgs]
     
 def get_uns(adata, key):
     data = None 
