@@ -109,8 +109,7 @@ class SURE(nn.Module):
                  delta: float = 0.0,
                  post_layer_fct: list = ['layernorm'],
                  post_act_fct: list = None,
-                 latent_dist: Literal['normal','studentt','laplacian','cauchy'] = 'normal',
-                 studentt_dof: float = 8,
+                 latent_dist: Literal['normal','studentt','laplacian','cauchy','gumbel'] = 'normal',
                  config_enum: str = 'parallel',
                  use_cuda: bool = False,
                  dtype = torch.float32, # type: ignore
@@ -139,7 +138,6 @@ class SURE(nn.Module):
             self.use_laplacian=True
         elif latent_dist.lower() in ['studentt','student-t','t']:
             self.use_studentt = True 
-        self.dof = studentt_dof
         self.dtype = dtype
 
         self.dist_model = 'dmm' if use_dirichlet else 'mm'
@@ -313,15 +311,26 @@ class SURE(nn.Module):
                 use_cuda=self.use_cuda,
             )
 
-        self.codebook = MLP(
-            [self.code_size] + hidden_sizes + [[z_dim,z_dim]],
-            activation=activate_fct,
-            output_activation=[None,Exp],
-            post_layer_fct=post_layer_fct,
-            post_act_fct=post_act_fct,
-            allow_broadcast=self.allow_broadcast,
-            use_cuda=self.use_cuda,
-        )
+        if self.latent_dist == 'studentt':
+            self.codebook = MLP(
+                [self.code_size] + hidden_sizes + [[z_dim,z_dim,z_dim]],
+                activation=activate_fct,
+                output_activation=[Exp,None,Exp],
+                post_layer_fct=post_layer_fct,
+                post_act_fct=post_act_fct,
+                allow_broadcast=self.allow_broadcast,
+                use_cuda=self.use_cuda,
+            )
+        else:
+            self.codebook = MLP(
+                [self.code_size] + hidden_sizes + [[z_dim,z_dim]],
+                activation=activate_fct,
+                output_activation=[None,Exp],
+                post_layer_fct=post_layer_fct,
+                post_act_fct=post_act_fct,
+                allow_broadcast=self.allow_broadcast,
+                use_cuda=self.use_cuda,
+            )
 
         if self.use_cuda:
             self.cuda()
@@ -378,16 +387,15 @@ class SURE(nn.Module):
         total_count = pyro.param("inverse_dispersion", self.inverse_dispersion *
                                  xs.new_ones(self.input_size), constraint=constraints.positive)
         
-        if self.use_studentt:
-            dof = pyro.param("dof", self.dof * xs.new_ones(self.z_dim), 
-                             constraint=constraints.positive)
-
         eps = torch.finfo(xs.dtype).eps
         batch_size = xs.size(0)
         self.options = dict(dtype=xs.dtype, device=xs.device)
 
         I = torch.eye(self.code_size)
-        acs_loc,acs_scale = self.codebook(I)
+        if self.latent_dist=='studentt':
+            acs_dof,acs_loc,acs_scale = self.codebook(I)
+        else:
+            acs_loc,acs_scale = self.codebook(I)
 
         with pyro.plate('data'):
             prior = torch.zeros(batch_size, self.code_size, **self.options)
@@ -397,7 +405,8 @@ class SURE(nn.Module):
             prior_scale = torch.matmul(ns,acs_scale)
 
             if self.latent_dist == 'studentt':
-                zns = pyro.sample('zn', dist.StudentT(df=dof, loc=prior_loc, scale=prior_scale).to_event(1))
+                prior_dof = torch.matmul(ns,acs_dof)
+                zns = pyro.sample('zn', dist.StudentT(df=prior_dof, loc=prior_loc, scale=prior_scale).to_event(1))
             elif self.latent_dist == 'laplacian':
                 zns = pyro.sample('zn', dist.Laplace(prior_loc, prior_scale).to_event(1))
             elif self.latent_dist == 'cauchy':
@@ -486,16 +495,15 @@ class SURE(nn.Module):
         total_count = pyro.param("inverse_dispersion", self.inverse_dispersion *
                                  xs.new_ones(self.input_size), constraint=constraints.positive)
         
-        if self.use_studentt:
-            dof = pyro.param("dof", self.dof * xs.new_ones(self.z_dim), 
-                             constraint=constraints.positive)
-
         eps = torch.finfo(xs.dtype).eps
         batch_size = xs.size(0)
         self.options = dict(dtype=xs.dtype, device=xs.device)
 
         I = torch.eye(self.code_size)
-        acs_loc,acs_scale = self.codebook(I)
+        if self.latent_dist == 'student':
+            acs_dof,acs_loc,acs_scale = self.codebook(I)
+        else:
+            acs_loc,acs_scale = self.codebook(I)
 
         with pyro.plate('data'):
             prior = torch.zeros(batch_size, self.code_size, **self.options)
@@ -504,11 +512,14 @@ class SURE(nn.Module):
             prior_loc = torch.matmul(ns,acs_loc)
             prior_scale = torch.matmul(ns,acs_scale)
 
-            if self.use_studentt:
-                zns = pyro.sample('zn', dist.StudentT(df=dof, loc=prior_loc, scale=prior_scale).to_event(1))
-            elif self.use_laplacian:
+            if self.latent_dist == 'studentt':
+                prior_dof = torch.matmul(ns,acs_dof)
+                zns = pyro.sample('zn', dist.StudentT(df=prior_dof, loc=prior_loc, scale=prior_scale).to_event(1))
+            elif self.latent_dist == 'laplacian':
                 zns = pyro.sample('zn', dist.Laplace(prior_loc, prior_scale).to_event(1))
-            else:
+            elif self.latent_dist == 'cauchy':
+                zns = pyro.sample('zn', dist.Cauchy(prior_loc, prior_scale).to_event(1))
+            elif self.latent_dist == 'normal':
                 zns = pyro.sample('zn', dist.Normal(prior_loc, prior_scale).to_event(1))
 
             if self.use_undesired:
@@ -597,16 +608,15 @@ class SURE(nn.Module):
         total_count = pyro.param("inverse_dispersion", self.inverse_dispersion *
                                  xs.new_ones(self.input_size), constraint=constraints.positive)
         
-        if self.use_studentt:
-            dof = pyro.param("dof", self.dof * xs.new_ones(self.z_dim), 
-                             constraint=constraints.positive)
-
         eps = torch.finfo(xs.dtype).eps
         batch_size = xs.size(0)
         self.options = dict(dtype=xs.dtype, device=xs.device)
 
         I = torch.eye(self.code_size)
-        acs_loc,acs_scale = self.codebook(I)
+        if self.latent_dist == 'studentt':
+            acs_dof,acs_loc,acs_scale = self.codebook(I)
+        else:
+            acs_loc,acs_scale = self.codebook(I)
 
         with pyro.plate('data'):
             prior = torch.zeros(batch_size, self.code_size, **self.options)
@@ -615,11 +625,14 @@ class SURE(nn.Module):
             prior_loc = torch.matmul(ns,acs_loc)
             prior_scale = torch.matmul(ns,acs_scale)
 
-            if self.use_studentt:
-                zns = pyro.sample('zn', dist.StudentT(df=dof, loc=prior_loc, scale=prior_scale).to_event(1))
-            elif self.use_laplacian:
+            if self.latent_dist=='studentt':
+                prior_dof = torch.matmul(ns,acs_dof)
+                zns = pyro.sample('zn', dist.StudentT(df=prior_dof, loc=prior_loc, scale=prior_scale).to_event(1))
+            elif self.latent_dist=='laplacian':
                 zns = pyro.sample('zn', dist.Laplace(prior_loc, prior_scale).to_event(1))
-            else:
+            elif self.latent_dist=='cauchy':
+                zns = pyro.sample('zn', dist.Cauchy(prior_loc, prior_scale).to_event(1))
+            elif self.latent_dist=='normal':
                 zns = pyro.sample('zn', dist.Normal(prior_loc, prior_scale).to_event(1))
 
             zs = zns
@@ -702,16 +715,15 @@ class SURE(nn.Module):
         total_count = pyro.param("inverse_dispersion", self.inverse_dispersion *
                                  xs.new_ones(self.input_size), constraint=constraints.positive)
         
-        if self.use_studentt:
-            dof = pyro.param("dof", self.dof * xs.new_ones(self.z_dim), 
-                             constraint=constraints.positive)
-
         eps = torch.finfo(xs.dtype).eps
         batch_size = xs.size(0)
         self.options = dict(dtype=xs.dtype, device=xs.device)
 
         I = torch.eye(self.code_size)
-        acs_loc,acs_scale = self.codebook(I)
+        if self.latent_dist == 'studentt':
+            acs_dof,acs_loc,acs_scale = self.codebook(I)
+        else:
+            acs_loc,acs_scale = self.codebook(I)
 
         with pyro.plate('data'):
             prior = torch.zeros(batch_size, self.code_size, **self.options)
@@ -720,11 +732,14 @@ class SURE(nn.Module):
             prior_loc = torch.matmul(ns,acs_loc)
             prior_scale = torch.matmul(ns,acs_scale)
 
-            if self.use_studentt:
-                zns = pyro.sample('zn', dist.StudentT(df=dof, loc=prior_loc, scale=prior_scale).to_event(1))
-            elif self.use_laplacian:
+            if self.latent_dist=='studentt':
+                prior_dof = torch.matmul(ns,acs_dof)
+                zns = pyro.sample('zn', dist.StudentT(df=prior_dof, loc=prior_loc, scale=prior_scale).to_event(1))
+            elif self.latent_dist=='laplacian':
                 zns = pyro.sample('zn', dist.Laplace(prior_loc, prior_scale).to_event(1))
-            else:
+            elif self.latent_dist=='cauchy':
+                zns = pyro.sample('zn', dist.Cauchy(prior_loc, prior_scale).to_event(1))
+            elif self.latent_dist=='normal':
                 zns = pyro.sample('zn', dist.Normal(prior_loc, prior_scale).to_event(1))
 
             zs = [us, zns]
@@ -803,7 +818,10 @@ class SURE(nn.Module):
 
     def _get_metacell_coordinates(self):
         I = torch.eye(self.code_size, **self.options)
-        cb,_ = self.codebook(I)
+        if self.latent_dist=='studentt':
+            _,cb,_ = self.codebook(I)
+        else:
+            cb,_ = self.codebook(I)
         return cb
     
     def get_metacell_coordinates(self):
@@ -889,7 +907,10 @@ class SURE(nn.Module):
     
     def _get_codebook(self):
         I = torch.eye(self.code_size, **self.options)
-        cb_loc,cb_scale = self.codebook(I)
+        if self.latent_dist=='studentt':
+            _,cb_loc,cb_scale = self.codebook(I)
+        else:
+            cb_loc,cb_scale = self.codebook(I)
         return cb_loc,cb_scale
     
     def get_codebook(self):
@@ -1451,13 +1472,6 @@ def parse_args():
         help="distribution model for latent representation",
     )
     parser.add_argument(
-        "-dof",
-        "--degree-of-freedom",
-        default=8,
-        type=int,
-        help="degree of freedom for Student-t distribution",
-    )
-    parser.add_argument(
         "-cs",
         "--codebook-size",
         default=100,
@@ -1644,7 +1658,6 @@ def main():
         post_act_fct=args.post_activation_function,
         codebook_size=args.codebook_size,
         latent_dist = latent_dist,
-        studentt_dof = args.degree_of_freedom,
         dtype=dtype,
     )
 

@@ -106,7 +106,7 @@ class SingleOmicsAtlas(nn.Module):
             batch_size: int = 512, 
             batch_size_per_adata: int = 512, 
             n_epochs: int = 200, 
-            latent_dist: Literal['normal','laplacian','studentt'] = 'normal',
+            latent_dist: Literal['normal','laplacian','studentt','cauchy'] = 'normal',
             use_dirichlet: bool = True, 
             use_dirichlet_per_adata: bool = True, 
             zero_inflation: bool = True, 
