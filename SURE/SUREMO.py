@@ -1272,7 +1272,7 @@ def parse_args():
         "--jit", action="store_true", help="use PyTorch jit to speed up training"
     )
     parser.add_argument(
-        "-n", "--num-epochs", default=40, type=int, help="number of epochs to run"
+        "-n", "--num-epochs", default=200, type=int, help="number of epochs to run"
     )
     parser.add_argument(
         "-enum",
