@@ -771,7 +771,7 @@ class SUREMO(nn.Module):
                 else:
                     pyro.sample('x2', dist.Exponential(rate=rate).to_event(1), obs=xs2)
             elif self.loss_func2 == 'multinomial':
-                pyro.sample('x', dist.Multinomial(total_count=int(1e8), probs=theta_omic2), obs=xs2)
+                pyro.sample('x2', dist.Multinomial(total_count=int(1e8), probs=theta_omic2), obs=xs2)
             elif self.loss_func2 == 'gaussian':
                 if self.use_zeroinflate2:
                     pyro.sample('x2', dist.ZeroInflatedDistribution(dist.Normal(concentrate_omic2, concentrate_omic2_scale),gate_logits=gate_logits2).to_event(1), obs=xs2)
