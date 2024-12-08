@@ -1553,7 +1553,10 @@ def main():
              )
 
     if args.save_model is not None:
-        SUREMO.save_model(suremo, args.save_model)
+        if args.save_model.endswith('gz'):
+            SUREMO.save_model(suremo, args.save_model, compression=True)
+        else:
+            SUREMO.save_model(suremo, args.save_model)
 
 
 

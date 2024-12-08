@@ -1672,7 +1672,10 @@ def main():
              )
 
     if args.save_model is not None:
-        SURE.save_model(sure, args.save_model)
+        if args.save_model.endswith('gz'):
+            SURE.save_model(sure, args.save_model, compression=True)
+        else:
+            SURE.save_model(sure, args.save_model)
 
     
 
