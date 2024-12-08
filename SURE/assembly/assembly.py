@@ -74,9 +74,11 @@ def assembly(adata_list_, batch_key, preprocessing=True, hvgs=None,
     # process
     with tempfile.TemporaryDirectory() as temp_dir:
         if latent_dist == 'lapacian':
-            latent_dist_param='-la'
+            latent_dist_param='--z-dist laplacian'
         elif latent_dist == 'studentt':
-            latent_dist_param='-st'
+            latent_dist_param='--z-dist studentt'
+        elif latent_dist == 'cauchy':
+            latent_dist_param='--z-dist cauchy'
         else:
             latent_dist_param=''
 
