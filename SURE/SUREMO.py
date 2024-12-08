@@ -559,9 +559,9 @@ class SUREMO(nn.Module):
             elif self.loss_func1 == 'poisson':
                 rate = xs.sum(1).unsqueeze(-1) * theta_omic1
                 if self.use_exact_zeroinflate1:
-                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Exponential(rate=rate),gate_logits=gate_logits1).to_event(1), obs=xs)
+                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Poisson(rate=rate),gate_logits=gate_logits1).to_event(1), obs=xs.round())
                 else:
-                    pyro.sample('x', dist.Exponential(rate=rate).to_event(1), obs=xs)
+                    pyro.sample('x', dist.Poisson(rate=rate).to_event(1), obs=xs.round())
             elif self.loss_func1 == 'multinomial':
                 pyro.sample('x', dist.Multinomial(total_count=int(1e8), probs=theta_omic1), obs=xs)
             elif self.loss_func1 == 'gaussian':
@@ -583,11 +583,11 @@ class SUREMO(nn.Module):
             elif self.loss_func2 == 'poisson':
                 rate = xs2.sum(1).unsqueeze(-1) * theta_omic2
                 if self.use_exact_zeroinflate2:
-                    pyro.sample('x2', dist.ZeroInflatedDistribution(dist.Exponential(rate=rate),gate_logits=gate_logits2).to_event(1), obs=xs2)
+                    pyro.sample('x2', dist.ZeroInflatedDistribution(dist.Poisson(rate=rate),gate_logits=gate_logits2).to_event(1), obs=xs2.round())
                 else:
-                    pyro.sample('x2', dist.Exponential(rate=rate).to_event(1), obs=xs2)
+                    pyro.sample('x2', dist.Poisson(rate=rate).to_event(1), obs=xs2.round())
             elif self.loss_func2 == 'multinomial':
-                pyro.sample('x', dist.Multinomial(total_count=int(1e8), probs=theta_omic2), obs=xs2)
+                pyro.sample('x2', dist.Multinomial(total_count=int(1e8), probs=theta_omic2), obs=xs2)
             elif self.loss_func2 == 'gaussian':
                 if self.use_zeroinflate2:
                     pyro.sample('x2', dist.ZeroInflatedDistribution(dist.Normal(concentrate_omic2, concentrate_omic2_scale),gate_logits=gate_logits2).to_event(1), obs=xs2)
@@ -743,9 +743,9 @@ class SUREMO(nn.Module):
             elif self.loss_func1 == 'poisson':
                 rate = xs.sum(1).unsqueeze(-1) * theta_omic1
                 if self.use_exact_zeroinflate1:
-                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Exponential(rate=rate),gate_logits=gate_logits1).to_event(1), obs=xs)
+                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Poisson(rate=rate),gate_logits=gate_logits1).to_event(1), obs=xs.round())
                 else:
-                    pyro.sample('x', dist.Exponential(rate=rate).to_event(1), obs=xs)
+                    pyro.sample('x', dist.Poisson(rate=rate).to_event(1), obs=xs.round())
             elif self.loss_func1 == 'multinomial':
                 pyro.sample('x', dist.Multinomial(total_count=int(1e8), probs=theta_omic1), obs=xs)
             elif self.loss_func1 == 'gaussian':
@@ -767,9 +767,9 @@ class SUREMO(nn.Module):
             elif self.loss_func2 == 'poisson':
                 rate = xs2.sum(1).unsqueeze(-1) * theta_omic2
                 if self.use_exact_zeroinflate2:
-                    pyro.sample('x2', dist.ZeroInflatedDistribution(dist.Exponential(rate=rate),gate_logits=gate_logits2).to_event(1), obs=xs2)
+                    pyro.sample('x2', dist.ZeroInflatedDistribution(dist.Poisson(rate=rate),gate_logits=gate_logits2).to_event(1), obs=xs2.round())
                 else:
-                    pyro.sample('x2', dist.Exponential(rate=rate).to_event(1), obs=xs2)
+                    pyro.sample('x2', dist.Poisson(rate=rate).to_event(1), obs=xs2.round())
             elif self.loss_func2 == 'multinomial':
                 pyro.sample('x2', dist.Multinomial(total_count=int(1e8), probs=theta_omic2), obs=xs2)
             elif self.loss_func2 == 'gaussian':

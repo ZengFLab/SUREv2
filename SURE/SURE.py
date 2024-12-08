@@ -459,9 +459,9 @@ class SURE(nn.Module):
             elif self.loss_func == 'poisson':
                 rate = xs.sum(1).unsqueeze(-1) * theta
                 if self.use_exact_zeroinflate:
-                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Exponential(rate=rate),gate_logits=gate_logits).to_event(1), obs=xs)
+                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Poisson(rate=rate),gate_logits=gate_logits).to_event(1), obs=xs.round())
                 else:
-                    pyro.sample('x', dist.Exponential(rate=rate).to_event(1), obs=xs)
+                    pyro.sample('x', dist.Poisson(rate=rate).to_event(1), obs=xs.round())
             elif self.loss_func == 'multinomial':
                 pyro.sample('x', dist.Multinomial(total_count=int(1e8), probs=theta), obs=xs)
             elif self.loss_func == 'gaussian':
@@ -569,9 +569,9 @@ class SURE(nn.Module):
             elif self.loss_func == 'poisson':
                 rate = xs.sum(1).unsqueeze(-1) * theta
                 if self.use_exact_zeroinflate:
-                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Exponential(rate=rate),gate_logits=gate_logits).to_event(1), obs=xs)
+                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Poisson(rate=rate),gate_logits=gate_logits).to_event(1), obs=xs.round())
                 else:
-                    pyro.sample('x', dist.Exponential(rate=rate).to_event(1), obs=xs)
+                    pyro.sample('x', dist.Poisson(rate=rate).to_event(1), obs=xs.round())
             elif self.loss_func == 'multinomial':
                 pyro.sample('x', dist.Multinomial(total_count=int(1e8), probs=theta), obs=xs)
             elif self.loss_func == 'gaussian':
@@ -679,9 +679,9 @@ class SURE(nn.Module):
             elif self.loss_func == 'poisson':
                 rate = xs.sum(1).unsqueeze(-1) * theta
                 if self.use_exact_zeroinflate:
-                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Exponential(rate=rate),gate_logits=gate_logits).to_event(1), obs=xs)
+                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Poisson(rate=rate),gate_logits=gate_logits).to_event(1), obs=xs.round())
                 else:
-                    pyro.sample('x', dist.Exponential(rate=rate).to_event(1), obs=xs)
+                    pyro.sample('x', dist.Poisson(rate=rate).to_event(1), obs=xs.round())
             elif self.loss_func == 'multinomial':
                 pyro.sample('x', dist.Multinomial(total_count=int(1e8), probs=theta), obs=xs)
             elif self.loss_func == 'gaussian':
@@ -786,9 +786,9 @@ class SURE(nn.Module):
             elif self.loss_func == 'poisson':
                 rate = xs.sum(1).unsqueeze(-1) * theta
                 if self.use_exact_zeroinflate:
-                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Exponential(rate=rate),gate_logits=gate_logits).to_event(1), obs=xs)
+                    pyro.sample('x', dist.ZeroInflatedDistribution(dist.Poisson(rate=rate),gate_logits=gate_logits).to_event(1), obs=xs.round())
                 else:
-                    pyro.sample('x', dist.Exponential(rate=rate).to_event(1), obs=xs)
+                    pyro.sample('x', dist.Poisson(rate=rate).to_event(1), obs=xs.round())
             elif self.loss_func == 'multinomial':
                 pyro.sample('x', dist.Multinomial(total_count=int(1e8), probs=theta), obs=xs)
             elif self.loss_func == 'gaussian':
