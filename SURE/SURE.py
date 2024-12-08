@@ -500,7 +500,7 @@ class SURE(nn.Module):
         self.options = dict(dtype=xs.dtype, device=xs.device)
 
         I = torch.eye(self.code_size)
-        if self.latent_dist == 'student':
+        if self.latent_dist == 'studentt':
             acs_dof,acs_loc,acs_scale = self.codebook(I)
         else:
             acs_loc,acs_scale = self.codebook(I)
