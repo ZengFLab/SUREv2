@@ -1013,8 +1013,8 @@ class SURE(nn.Module):
         return counts
     
     def _count_sample(self,concentrate,total_count=1e3):
-        #theta = self._count(concentrate=concentrate, total_counts_per_cell=1)
-        theta = self.sigmoid(concentrate)
+        theta = self._count(concentrate=concentrate, total_counts_per_cell=1)
+        #theta = self.sigmoid(concentrate)
         counts = dist.NegativeBinomial(total_count=int(total_count), probs=theta).to_event(1).sample()
         return counts
     
